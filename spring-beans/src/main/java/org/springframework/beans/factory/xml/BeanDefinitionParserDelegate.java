@@ -412,16 +412,18 @@ public class BeanDefinitionParserDelegate {
 	 */
 	@Nullable
 	public BeanDefinitionHolder parseBeanDefinitionElement(Element ele, @Nullable BeanDefinition containingBean) {
-		String id = ele.getAttribute(ID_ATTRIBUTE);
-		String nameAttr = ele.getAttribute(NAME_ATTRIBUTE);
+		String id = ele.getAttribute(ID_ATTRIBUTE);		// 获取id属性
+		String nameAttr = ele.getAttribute(NAME_ATTRIBUTE);	// 获取name属性
 
 		List<String> aliases = new ArrayList<>();
+		// 解析别名，以逗号、分号、空格隔开的别名列表
 		if (StringUtils.hasLength(nameAttr)) {
 			String[] nameArr = StringUtils.tokenizeToStringArray(nameAttr, MULTI_VALUE_ATTRIBUTE_DELIMITERS);
 			aliases.addAll(Arrays.asList(nameArr));
 		}
 
 		String beanName = id;
+		// 如果没有id属性，则以第一个别名作为id
 		if (!StringUtils.hasText(beanName) && !aliases.isEmpty()) {
 			beanName = aliases.remove(0);
 			if (logger.isDebugEnabled()) {
@@ -431,18 +433,23 @@ public class BeanDefinitionParserDelegate {
 		}
 
 		if (containingBean == null) {
+			//  如果没有子bean直接检测本名、别名是否有重复
 			checkNameUniqueness(beanName, aliases, ele);
 		}
 
+		// 解析 Bean 的其他属性
 		AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
 		if (beanDefinition != null) {
+			// 如果bean没有定义id，name
 			if (!StringUtils.hasText(beanName)) {
 				try {
+					// 假如包含子bean，那么会生成一个唯一name
 					if (containingBean != null) {
 						beanName = BeanDefinitionReaderUtils.generateBeanName(
 								beanDefinition, this.readerContext.getRegistry(), true);
 					}
 					else {
+						// 如果不包含子bean，则由context来生成唯一name
 						beanName = this.readerContext.generateBeanName(beanDefinition);
 						// Register an alias for the plain bean class name, if still possible,
 						// if the generator returned the class name plus a suffix.
@@ -451,6 +458,7 @@ public class BeanDefinitionParserDelegate {
 						if (beanClassName != null &&
 								beanName.startsWith(beanClassName) && beanName.length() > beanClassName.length() &&
 								!this.readerContext.getRegistry().isBeanNameInUse(beanClassName)) {
+							// 向上兼容，增加对应的class名字别名
 							aliases.add(beanClassName);
 						}
 					}
@@ -464,6 +472,7 @@ public class BeanDefinitionParserDelegate {
 					return null;
 				}
 			}
+			// 构建一个包含bean定义的holder对象
 			String[] aliasesArray = StringUtils.toStringArray(aliases);
 			return new BeanDefinitionHolder(beanDefinition, beanName, aliasesArray);
 		}

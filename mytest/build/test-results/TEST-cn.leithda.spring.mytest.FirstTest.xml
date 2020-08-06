@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cn.leithda.spring.mytest.FirstTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-07-27T01:52:54" hostname="leithdadeMacBook-Pro.local" time="4.28">
+  <properties/>
+  <testcase name="beanFactoryTest" classname="cn.leithda.spring.mytest.FirstTest" time="4.28"/>
+  <system-out><![CDATA[MyTestBean{name='leithda'}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

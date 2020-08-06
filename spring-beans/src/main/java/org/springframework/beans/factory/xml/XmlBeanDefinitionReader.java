@@ -388,8 +388,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource)
 			throws BeanDefinitionStoreException {
 		try {
-			Document doc = doLoadDocument(inputSource, resource);
-			return registerBeanDefinitions(doc, resource);
+			Document doc = doLoadDocument(inputSource, resource);	// <1> 加载 xml
+			return registerBeanDefinitions(doc, resource);	// <2> 注册 Bean
 		}
 		catch (BeanDefinitionStoreException ex) {
 			throw ex;
@@ -503,9 +503,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see BeanDefinitionDocumentReader#registerBeanDefinitions
 	 */
 	public int registerBeanDefinitions(Document doc, Resource resource) throws BeanDefinitionStoreException {
-		BeanDefinitionDocumentReader documentReader = createBeanDefinitionDocumentReader();
+		BeanDefinitionDocumentReader documentReader = createBeanDefinitionDocumentReader();	// <2.1> 创建 Xml 解析器
 		int countBefore = getRegistry().getBeanDefinitionCount();
-		documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
+		documentReader.registerBeanDefinitions(doc, createReaderContext(resource));	// <2.2> 注册 Bean
 		return getRegistry().getBeanDefinitionCount() - countBefore;
 	}
 
