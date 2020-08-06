@@ -51,6 +51,10 @@ import org.springframework.lang.Nullable;
  */
 public interface Resource extends InputStreamSource {
 
+
+	/**
+	 * 判断资源是否真实存在与物理磁盘上
+	 */
 	/**
 	 * Determine whether this resource actually exists in physical form.
 	 * <p>This method performs a definitive existence check, whereas the
