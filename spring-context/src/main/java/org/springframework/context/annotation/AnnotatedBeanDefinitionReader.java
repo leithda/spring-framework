@@ -83,7 +83,9 @@ public class AnnotatedBeanDefinitionReader {
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 		Assert.notNull(environment, "Environment must not be null");
 		this.registry = registry;
+		// <1.1.1> 创建一个 ConditionEvaluator 用于解析 @Condition注解
 		this.conditionEvaluator = new ConditionEvaluator(registry, environment, null);
+		// <1.1.2> 注册给定注册表中的所有后置处理器
 		AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
 	}
 
@@ -197,6 +199,10 @@ public class AnnotatedBeanDefinitionReader {
 		doRegisterBean(annotatedClass, null, name, qualifiers);
 	}
 
+
+
+
+
 	/**
 	 * Register a bean from the given bean class, deriving its metadata from
 	 * class-declared annotations.
@@ -210,20 +216,43 @@ public class AnnotatedBeanDefinitionReader {
 	 * factory's {@link BeanDefinition}, e.g. setting a lazy-init or primary flag
 	 * @since 5.0
 	 */
+	/**
+	 * 实际执行Bean注册的地方
+	 * @param annotatedClass 含注解的配置类
+	 * @param instanceSupplier 注册回调
+	 * @param name 一个明确的名称
+	 * @param qualifiers 限定词(如Primary或Lazy)
+	 * @param definitionCustomizers 一个或多个回调工厂，例如设置一个懒加载或主键标志
+	 * @param <T> 泛型
+	 * @since 5.0
+	 */
 	<T> void doRegisterBean(Class<T> annotatedClass, @Nullable Supplier<T> instanceSupplier, @Nullable String name,
 			@Nullable Class<? extends Annotation>[] qualifiers, BeanDefinitionCustomizer... definitionCustomizers) {
 
+		// 封装 BeanDefinition
 		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(annotatedClass);
-		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
+
+		// 判断当前 bean 是否需要被注册
+		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {	// 判断当前配置类是否应该跳过
 			return;
 		}
 
+		// 设置回调
 		abd.setInstanceSupplier(instanceSupplier);
+
+		// 解析 Scope 注解
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
+
+		// 设置 scope
 		abd.setScope(scopeMetadata.getScopeName());
+
+		// 生成 beanName
 		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
 
+		// 解析 BeanDefinition 的其他注解
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
+
+		// 手动调用 register 时，需要设置懒加载或者主要的
 		if (qualifiers != null) {
 			for (Class<? extends Annotation> qualifier : qualifiers) {
 				if (Primary.class == qualifier) {
@@ -237,12 +266,19 @@ public class AnnotatedBeanDefinitionReader {
 				}
 			}
 		}
+
+		// 执行自定义的回调方法
 		for (BeanDefinitionCustomizer customizer : definitionCustomizers) {
 			customizer.customize(abd);
 		}
 
+		// 构造 BeanDefinitionHolder ， BeanDefinition中没有beanName属性，Holder中有。
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
+
+		// 解析scope中的代理属性，默认为no
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+
+		// 注册 BeanDefinition 到容器中
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
 	}
 
@@ -250,6 +286,7 @@ public class AnnotatedBeanDefinitionReader {
 	/**
 	 * Get the Environment from the given registry if possible, otherwise return a new
 	 * StandardEnvironment.
+	 * 如果可能，从注册表中获取到环境变量，否则返回一个标准的环境变量 StandardEnvironment
 	 */
 	private static Environment getOrCreateEnvironment(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
