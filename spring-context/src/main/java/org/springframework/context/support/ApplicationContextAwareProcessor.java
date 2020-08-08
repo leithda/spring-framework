@@ -77,6 +77,8 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 	@Override
 	@Nullable
 	public Object postProcessBeforeInitialization(final Object bean, String beanName) throws BeansException {
+
+		// 权限检查
 		AccessControlContext acc = null;
 
 		if (System.getSecurityManager() != null &&
@@ -93,6 +95,7 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 			}, acc);
 		}
 		else {
+			// 实现 Aware 增强功能
 			invokeAwareInterfaces(bean);
 		}
 

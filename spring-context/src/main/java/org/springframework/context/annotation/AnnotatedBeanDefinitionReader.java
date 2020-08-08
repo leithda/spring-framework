@@ -252,7 +252,7 @@ public class AnnotatedBeanDefinitionReader {
 		// 解析 BeanDefinition 的其他注解
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
 
-		// 手动调用 register 时，需要设置懒加载或者主要的
+		// 手动调用 register 时，需要设置懒加载或者主要的Bean对象
 		if (qualifiers != null) {
 			for (Class<? extends Annotation> qualifier : qualifiers) {
 				if (Primary.class == qualifier) {

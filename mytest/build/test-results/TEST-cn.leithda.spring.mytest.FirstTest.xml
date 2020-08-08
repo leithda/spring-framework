@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.leithda.spring.mytest.FirstTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-08-06T02:39:16" hostname="leithdadeMacBook-Pro.local" time="0.637">
-  <properties/>
-  <testcase name="annotationConfigApplicationContextTest" classname="cn.leithda.spring.mytest.FirstTest" time="0.637"/>
-  <system-out><![CDATA[bean1: MyTestBean{name='bean1'} || bean2: MyTestBean{name='bean2'}
-]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
